@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,6 +21,11 @@ var Articles []Article
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the simple GO API!")
 	fmt.Println("Endpoint Hit: root directory")
+}
+
+func returnAllArticles(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: returnAllArticles")
+	json.NewEncoder(w).Encode(Articles)
 }
 
 func handleRequests() {
