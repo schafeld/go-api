@@ -18,6 +18,8 @@ type Article struct {
 // Global array to mock article data
 var Articles []Article
 
+const serverPort string = "8080"
+
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the simple GO API!")
 	fmt.Println("Endpoint Hit: root directory")
@@ -31,7 +33,7 @@ func returnAllArticles(w http.ResponseWriter, r *http.Request) {
 func handleRequests() {
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/articles", returnAllArticles)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":"+serverPort, nil))
 }
 
 func main() {
