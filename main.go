@@ -1,10 +1,12 @@
+// main.go
 package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
-	"net/http"
+    "fmt"
+    "log"
+    "net/http"
+    "github.com/gorilla/mux"
 )
 
 // Struct for articles
@@ -31,12 +33,14 @@ func returnAllArticles(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRequests() {
-	http.HandleFunc("/", homePage)
-	http.HandleFunc("/articles", returnAllArticles)
-	log.Fatal(http.ListenAndServe(":"+serverPort, nil))
+	myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter.HandleFunc("/", homePage)
+	myRouter.HandleFunc("/articles", returnAllArticles)
+	log.Fatal(http.ListenAndServe(":"+serverPort, myRouter))
 }
 
 func main() {
+	fmt.Println("Rest API v2.0 - Mux Routers")
 	Articles = []Article{
 		Article{Title: "First Title", Desc: "Description of 1st article", Content: "Article One Content"},
 		Article{Title: "Second Title", Desc: "Descriptionof 2nd article", Content: "Article Two Content"},
