@@ -20,7 +20,7 @@ General response reading all articles as JSON:
 
     curl http://localhost:8080/articles
 
-Read specific article as JSON by id:
+Getting specific article as JSON by id:
 
     curl http://localhost:8080/article/2
 
