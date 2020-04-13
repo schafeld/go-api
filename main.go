@@ -4,6 +4,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -49,10 +50,19 @@ func returnSingleArticle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func createNewArticle(w http.ResponseWriter, r *http.Request) {
+	// get body of POST request
+	// return string response containing request body
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	fmt.Fprintf(w, "%+v", string(reqBody))
+}
+
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
 	myRouter.HandleFunc("/articles", returnAllArticles)
+	// Beware this post-article route needs to come first
+	myRouter.HandleFunc("/article", createNewArticle).Methods("POST")
 	myRouter.HandleFunc("/article/{id}", returnSingleArticle)
 	log.Fatal(http.ListenAndServe(":"+serverPort, myRouter))
 }
