@@ -54,7 +54,12 @@ func createNewArticle(w http.ResponseWriter, r *http.Request) {
 	// get body of POST request
 	// return string response containing request body
 	reqBody, _ := ioutil.ReadAll(r.Body)
-	fmt.Fprintf(w, "%+v", string(reqBody))
+	var article Article
+	json.Unmarshal(reqBody, &article)
+	// update global Articles array with new article
+	Articles = append(Articles, article)
+	json.NewEncoder(w).Encode(article)
+	// fmt.Fprintf(w, "%+v", string(reqBody))
 }
 
 func handleRequests() {
