@@ -62,12 +62,29 @@ func createNewArticle(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, "%+v", string(reqBody))
 }
 
+func deleteArticle(w http.ResponseWriter, r *http.Request) {
+	// get parameters from URL
+	vars := mux.Vars(r)
+	// extract `id` of article to delete
+	id := vars["id"]
+
+	// loop through all articles
+	for index, article := range Articles {
+		// delete article with matching id
+		if article.Id == id {
+			// update Articles array without deleted article
+			Articles = append(Articles[:index], Articles[index+1:]...)
+		}
+	}
+}
+
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
 	myRouter.HandleFunc("/articles", returnAllArticles)
 	// Beware this post-article route needs to come first
 	myRouter.HandleFunc("/article", createNewArticle).Methods("POST")
+	myRouter.HandleFunc("/article/{id}", deleteArticle).Methods("DELETE")
 	myRouter.HandleFunc("/article/{id}", returnSingleArticle)
 	log.Fatal(http.ListenAndServe(":"+serverPort, myRouter))
 }
