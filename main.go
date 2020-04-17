@@ -35,6 +35,7 @@ func returnAllArticles(w http.ResponseWriter, r *http.Request) {
 }
 
 func returnSingleArticle(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: returnSingleArticle")
 	vars := mux.Vars(r)
 	key := vars["id"]
 
@@ -51,6 +52,7 @@ func returnSingleArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func createNewArticle(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: createNewArticle")
 	// get body of POST request
 	// return string response containing request body
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -63,6 +65,7 @@ func createNewArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteArticle(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: deleteArticle")
 	// get parameters from URL
 	vars := mux.Vars(r)
 	// extract `id` of article to delete
@@ -78,6 +81,25 @@ func deleteArticle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// TODO: Make this work
+func updateArticle(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: updateArticle")
+	// w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	id := params["id"]
+	for index, article := range Articles {
+		if article.Id == id {
+			Articles = append(Articles[:index], Articles[index+1:]...)
+			var article Article
+			_ = json.NewDecoder(r.Body).Decode(&article)
+			article.Id = params["id"]
+			Articles = append(Articles, article)
+			json.NewEncoder(w).Encode(article)
+			return
+		}
+	}
+}
+
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
@@ -85,6 +107,7 @@ func handleRequests() {
 	// Beware this post-article route needs to come first
 	myRouter.HandleFunc("/article", createNewArticle).Methods("POST")
 	myRouter.HandleFunc("/article/{id}", deleteArticle).Methods("DELETE")
+	myRouter.HandleFunc("/article/{id}", updateArticle).Methods("PUT")
 	myRouter.HandleFunc("/article/{id}", returnSingleArticle)
 	log.Fatal(http.ListenAndServe(":"+serverPort, myRouter))
 }
@@ -93,7 +116,7 @@ func main() {
 	fmt.Println("Rest API v2.0 - Mux Routers")
 	Articles = []Article{
 		Article{Id: "1", Title: "First Title", Desc: "Description of 1st article", Content: "Article One Content"},
-		Article{Id: "2", Title: "Second Title", Desc: "Descriptionof 2nd article", Content: "Article Two Content"},
+		Article{Id: "2", Title: "Second Title", Desc: "Description of 2nd article", Content: "Article Two Content"},
 	}
 
 	fmt.Println("Starting web server at http://localhost:8080")
